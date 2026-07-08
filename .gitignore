@@ -11,3 +11,11 @@ node_modules/
 Thumbs.db
 # 日志
 *.log
+
+# ========== DevEco Studio / 鸿蒙项目忽略规则 ==========
+.hvigor/
+build/
+oh_modules/
+.ohos/
+.idea/
+local.properties
