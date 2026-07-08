@@ -1,0 +1,16 @@
+{
+  "src": [
+    "pages/Index",
+    "pages/HomePage",
+    "pages/ListingListPage",
+    "pages/ListingDetailPage",
+    "pages/BookingPage",
+    "pages/OrderListPage",
+    "pages/OrderDetailPage",
+    "pages/UserCenterPage",
+    "pages/ReviewSubmitPage",
+    "pages/FullScreenImagePage",
+    "pages/MyReviewsPage",
+    "pages/FavoritesPage"
+  ]
+}

@@ -1,0 +1,40 @@
+export class OrderBrief {
+  id: number = 0;
+  listing_id: number = 0;
+  listing_title: string = '';
+  listing_cover: string = '';
+  listing_city: string = '';
+  check_in: string = '';
+  check_out: string = '';
+  nights: number = 0;
+  total_price: number = 0;
+  status: string = '';
+  created_at: string = '';
+}
+
+export class OrderDetail {
+  id: number = 0;
+  user_id: number = 0;
+  listing_id: number = 0;
+  listing_title: string = '';
+  listing_cover: string = '';
+  listing_address: string = '';
+  listing_city: string = '';
+  check_in: string = '';
+  check_out: string = '';
+  guests: number = 0;
+  nights: number = 0;
+  base_total: number = 0;
+  cleaning_fee: number = 0;
+  service_fee: number = 0;
+  total_price: number = 0;
+  status: string = '';
+  paid_at: string = '';
+  cancelled_at: string = '';
+  checked_in_at: string = '';
+  completed_at: string = '';
+  created_at: string = '';
+  host_name: string = '';
+  host_avatar: string = '';
+  has_review: boolean = false;
+}

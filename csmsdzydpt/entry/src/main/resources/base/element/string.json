@@ -1,0 +1,36 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "城市民宿短租预订平台"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "城市民宿短租预订平台"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "城宿短租"
+    },
+    {
+      "name": "tab_home",
+      "value": "首页"
+    },
+    {
+      "name": "tab_explore",
+      "value": "探索"
+    },
+    {
+      "name": "tab_orders",
+      "value": "订单"
+    },
+    {
+      "name": "tab_profile",
+      "value": "我的"
+    },
+    {
+      "name": "app_name",
+      "value": "城宿短租"
+    }
+  ]
+}
