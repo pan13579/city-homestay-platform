@@ -11,8 +11,14 @@
     "pages/ReviewSubmitPage",
     "pages/FullScreenImagePage",
     "pages/MyReviewsPage",
+<<<<<<< Updated upstream
+    "pages/FavoritesPage"
+=======
     "pages/FavoritesPage",
     "pages/LoginPage",
-    "pages/RegisterPage"
+    "pages/RegisterPage",
+    "pages/SettingsPage",
+    "pages/HelpFeedbackPage"
+>>>>>>> Stashed changes
   ]
 }
