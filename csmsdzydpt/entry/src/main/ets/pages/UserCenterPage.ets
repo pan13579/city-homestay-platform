@@ -125,19 +125,9 @@ struct UserCenterPage {
               .margin({ left: 12, right: 12, bottom: 12 });
 
               Column() {
-<<<<<<< Updated upstream
-                this.menuItem('⚙️', '设置', '', () => {});
-=======
-                if (this.isLoggedIn) {
-                  this.menuItem('🚪', '退出登录', '', () => {
-                    this.handleLogout();
-                  });
-                  Divider().strokeWidth(0.5).color('#F0F0F0');
-                }
                 this.menuItem('⚙️', '设置', '', () => {
                   router.pushUrl({ url: 'pages/SettingsPage' });
                 });
->>>>>>> Stashed changes
                 Divider().strokeWidth(0.5).color('#F0F0F0');
                 this.menuItem('❓', '帮助与反馈', '', () => {
                   router.pushUrl({ url: 'pages/HelpFeedbackPage' });
