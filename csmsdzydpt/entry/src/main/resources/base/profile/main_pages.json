@@ -11,6 +11,8 @@
     "pages/ReviewSubmitPage",
     "pages/FullScreenImagePage",
     "pages/MyReviewsPage",
-    "pages/FavoritesPage"
+    "pages/FavoritesPage",
+    "pages/LoginPage",
+    "pages/RegisterPage"
   ]
 }

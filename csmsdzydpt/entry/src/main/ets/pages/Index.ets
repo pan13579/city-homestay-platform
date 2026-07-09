@@ -1,4 +1,5 @@
 import { router } from '@kit.ArkUI';
+import { AuthStorage } from '../utils/AuthStorage';
 
 @Entry
 @Component
@@ -6,6 +7,9 @@ struct Index {
   @State opacityValue: number = 0;
 
   aboutToAppear(): void {
+    // Initialize auth storage from preferences
+    AuthStorage.init(getContext(this));
+
     // Fade in animation
     animateTo({ duration: 800, curve: Curve.EaseOut }, () => {
       this.opacityValue = 1;

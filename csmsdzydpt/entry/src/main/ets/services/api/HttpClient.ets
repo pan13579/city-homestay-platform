@@ -1,6 +1,7 @@
 import { http } from '@kit.NetworkKit';
 import { ApiEndpoints } from '../../constants/ApiEndpoints';
 import { ApiResponse } from '../../models/ApiResponse';
+import { AuthStorage } from '../../utils/AuthStorage';
 
 export class HttpClient {
   static async request<T>(method: http.RequestMethod, path: string, body?: Object): Promise<T> {
@@ -9,12 +10,17 @@ export class HttpClient {
     try {
       const url = path.startsWith('http') ? path : `${ApiEndpoints.BASE_URL}${path}`;
 
+      const token = AuthStorage.getToken();
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json'
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
       const options: http.HttpRequestOptions = {
         method: method,
-        header: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer demo-token-2024'
-        },
+        header: headers,
         connectTimeout: 10000,
         readTimeout: 10000
       };

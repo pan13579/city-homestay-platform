@@ -1,6 +1,6 @@
 export class ApiEndpoints {
   // 可通过偏好设置修改服务器地址
-  static BASE_URL: string = 'http://10.21.195.23:3001';
+  static BASE_URL: string = 'http://10.21.247.205:3001';
 
   // 房源
   static readonly LISTINGS = `${ApiEndpoints.BASE_URL}/api/listings`;
@@ -18,6 +18,7 @@ export class ApiEndpoints {
 
   // 用户
   static readonly USERS_LOGIN = `${ApiEndpoints.BASE_URL}/api/users/login`;
+  static readonly USERS_REGISTER = `${ApiEndpoints.BASE_URL}/api/users/register`;
   static readonly USERS_PROFILE = `${ApiEndpoints.BASE_URL}/api/users/profile`;
 
   // 上传

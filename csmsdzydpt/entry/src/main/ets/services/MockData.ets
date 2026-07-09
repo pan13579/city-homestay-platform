@@ -26,13 +26,31 @@ export class MockData {
     b.base_price = price;
     b.avg_rating = rating;
     b.review_count = reviews;
-    b.images = [];
+    b.images = MockData.getMockImages(id);
     b.latitude = lat;
     b.longitude = lng;
     b.max_guests = guests;
     b.bedrooms = bedrooms;
     b.beds = beds;
     return b;
+  }
+
+  static getMockImages(id: number): string[] {
+    const imageMap: Record<number, string[]> = {
+      1: ['/api/images/01.jpg', '/api/images/02.jpg', '/api/images/03.jpg'],
+      2: ['/api/images/04.jpg', '/api/images/05.jpg', '/api/images/06.jpeg'],
+      3: ['/api/images/07.jpg', '/api/images/08.jpg', '/api/images/09.jpeg'],
+      4: ['/api/images/10.jpeg', '/api/images/11.jpeg', '/api/images/12.jpeg'],
+      5: ['/api/images/13.jpeg', '/api/images/14.jpeg', '/api/images/15.jpeg'],
+      6: ['/api/images/16.jpeg', '/api/images/17.jpeg', '/api/images/18.jpeg'],
+      7: ['/api/images/19.jpeg', '/api/images/20.jpeg', '/api/images/21.jpeg'],
+      8: ['/api/images/22.jpeg', '/api/images/23.jpeg', '/api/images/24.jpeg'],
+      9: ['/api/images/25.jpeg', '/api/images/26.jpeg', '/api/images/27.jpeg'],
+      10: ['/api/images/28.jpeg', '/api/images/29.jpeg', '/api/images/30.jpeg'],
+      11: ['/api/images/31.jpeg', '/api/images/32.jpeg', '/api/images/33.jpeg'],
+      12: ['/api/images/34.jpeg', '/api/images/35.jpeg', '/api/images/36.jpeg'],
+    };
+    return imageMap[id] || [];
   }
 
   static getCities(): string[] {
@@ -93,7 +111,8 @@ export class MockData {
     o.id = id;
     o.listing_id = listingId;
     o.listing_title = title;
-    o.listing_cover = '';
+    const images = MockData.getMockImages(listingId);
+    o.listing_cover = images.length > 0 ? images[0] : '';
     o.listing_city = city;
     o.check_in = checkIn;
     o.check_out = checkOut;

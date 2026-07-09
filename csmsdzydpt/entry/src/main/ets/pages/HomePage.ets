@@ -10,6 +10,7 @@ import { ListingCard } from '../components/listing/ListingCard';
 import { ApiEndpoints } from '../constants/ApiEndpoints';
 import { PriceUtil } from '../utils/PriceUtil';
 import { RatingStars } from '../components/common/RatingStars';
+import { AuthStorage } from '../utils/AuthStorage';
 
 interface BannerItem {
   title: string;
@@ -26,6 +27,7 @@ struct HomePage {
   @State isOnline: boolean = false;
 
   aboutToAppear(): void {
+    AuthStorage.init(getContext(this));
     this.loadData();
   }
 
@@ -35,17 +37,26 @@ struct HomePage {
 
   async loadData(): Promise<void> {
     this.isLoading = true;
+    let online = false;
+
+    // Load recommended listings (public API, works without auth)
     try {
       const recommendedResult = await ListingApi.getRecommended(6);
-      const upcomingResult = await OrderApi.getUpcoming();
       this.recommendedListings = recommendedResult || [];
-      this.upcomingStay = upcomingResult;
-      this.isOnline = true;
+      online = true;
     } catch (err) {
-      this.isOnline = false;
       this.recommendedListings = MockData.getRecommendedListings();
-      this.upcomingStay = MockData.getUpcomingStay();
     }
+
+    // Load upcoming stay (requires auth — may fail if not logged in)
+    try {
+      const upcomingResult = await OrderApi.getUpcoming();
+      this.upcomingStay = upcomingResult;
+    } catch (err) {
+      this.upcomingStay = null;
+    }
+
+    this.isOnline = online;
     this.isLoading = false;
   }
 
@@ -251,12 +262,28 @@ struct HomePage {
                 Row() {
                   ForEach(this.recommendedListings, (item: ListingBrief) => {
                     Column() {
-                      Image(item.images && item.images.length > 0
-                        ? ApiEndpoints.getImageUrl(item.images[0])
-                        : '')
+                      if (item.images && item.images.length > 0) {
+                        Image(ApiEndpoints.getImageUrl(item.images[0]))
+                          .width(160)
+                          .height(120)
+                          .objectFit(ImageFit.Cover);
+                      } else {
+                        Column() {
+                          Text('🏠')
+                            .fontSize(32)
+                            .margin({ bottom: 2 });
+                          Text(item.title)
+                            .fontSize(10)
+                            .fontColor('#FFFFFF')
+                            .opacity(0.7)
+                            .maxLines(1);
+                        }
                         .width(160)
                         .height(120)
-                        .objectFit(ImageFit.Cover);
+                        .justifyContent(FlexAlign.Center)
+                        .alignItems(HorizontalAlign.Center)
+                        .backgroundColor(this.getCardColor(item.title));
+                      }
 
                       Column() {
                         Text(item.title)
@@ -334,5 +361,15 @@ struct HomePage {
 
   getBannerColor(index: number): string {
     return ['#FF6B35', '#2EC4B6', '#4A90D9', '#E57373'][index] || '#FF6B35';
+  }
+
+  getCardColor(title: string): string {
+    const colors = ['#FF6B35', '#2EC4B6', '#4A90D9', '#E57373', '#81C784',
+      '#FFB74D', '#4DB6AC', '#7986CB', '#FF8A65', '#4FC3F7'];
+    let hash = 0;
+    for (let i = 0; i < title.length; i++) {
+      hash += title.charCodeAt(i);
+    }
+    return colors[hash % colors.length];
   }
 }

@@ -1,4 +1,5 @@
 const { getDb } = require('./connection');
+const bcrypt = require('bcryptjs');
 
 function initDatabase() {
   const db = getDb();
@@ -8,6 +9,7 @@ function initDatabase() {
     CREATE TABLE IF NOT EXISTS users (
       id          INTEGER PRIMARY KEY AUTOINCREMENT,
       username    TEXT NOT NULL UNIQUE,
+      password    TEXT,
       nickname    TEXT,
       phone       TEXT,
       avatar_url  TEXT,
@@ -84,15 +86,31 @@ function initDatabase() {
     );
   `);
 
+  // Migration: add password column if missing (for existing databases)
+  try {
+    const tableInfo = db.prepare("PRAGMA table_info(users)").all();
+    const hasPassword = tableInfo.some(col => col.name === 'password');
+    if (!hasPassword) {
+      db.exec("ALTER TABLE users ADD COLUMN password TEXT");
+      console.log('Migrated: added password column to users table');
+    }
+    // Set default password for existing users that don't have one
+    const defaultPwd = bcrypt.hashSync('123456', 10);
+    db.prepare('UPDATE users SET password = ? WHERE password IS NULL').run(defaultPwd);
+  } catch (err) {
+    console.log('Migration check skipped:', err.message);
+  }
+
   // Seed users
   const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get().count;
   if (userCount === 0) {
+    const defaultPassword = bcrypt.hashSync('123456', 10);
     const insertUser = db.prepare(
-      'INSERT INTO users (username, nickname, phone, avatar_url) VALUES (?, ?, ?, ?)'
+      'INSERT INTO users (username, password, nickname, phone, avatar_url) VALUES (?, ?, ?, ?, ?)'
     );
-    insertUser.run('demo_user', '旅行达人小王', '13800138000', '');
-    insertUser.run('host_zhang', '房东张先生', '13900139000', '');
-    insertUser.run('guest_li', '李女士', '13700137000', '');
+    insertUser.run('demo_user', defaultPassword, '旅行达人小王', '13800138000', '');
+    insertUser.run('host_zhang', defaultPassword, '房东张先生', '13900139000', '');
+    insertUser.run('guest_li', defaultPassword, '李女士', '13700137000', '');
   }
 
   // Seed listings
@@ -117,7 +135,7 @@ function initDatabase() {
         amenities: JSON.stringify(['WiFi', '空调', '洗衣机', '厨房', '热水器', '吹风机', '洗发水', '沐浴露']),
         base_price: 358, cleaning_fee: 50, service_fee_percent: 10,
         avg_rating: 4.8, review_count: 126,
-        images: JSON.stringify([]),
+        images: JSON.stringify(['/api/images/01.jpg', '/api/images/02.jpg', '/api/images/03.jpg']),
         host_name: '房东张先生', host_avatar: '',
         nearby: JSON.stringify([
           { name: '西湖', type: '景点', distance: '500m' },
@@ -138,7 +156,7 @@ function initDatabase() {
         amenities: JSON.stringify(['WiFi', '空调', '智能家居', '厨房', '洗衣机', '烘干机', '浴缸', '戴森吹风机', '投影仪']),
         base_price: 688, cleaning_fee: 100, service_fee_percent: 10,
         avg_rating: 4.9, review_count: 89,
-        images: JSON.stringify([]),
+        images: JSON.stringify(['/api/images/04.jpg', '/api/images/05.jpg', '/api/images/06.jpeg']),
         host_name: 'Linda', host_avatar: '',
         nearby: JSON.stringify([
           { name: '外滩', type: '景点', distance: '100m' },
@@ -158,7 +176,7 @@ function initDatabase() {
         amenities: JSON.stringify(['WiFi', '空调', '海景阳台', '免费早餐', '下午茶', '洗衣服务']),
         base_price: 288, cleaning_fee: 30, service_fee_percent: 8,
         avg_rating: 4.7, review_count: 203,
-        images: JSON.stringify([]),
+        images: JSON.stringify(['/api/images/07.jpg', '/api/images/08.jpg', '/api/images/09.jpeg']),
         host_name: '陈阿姨', host_avatar: '',
         nearby: JSON.stringify([
           { name: '日光岩', type: '景点', distance: '300m' },
@@ -178,7 +196,7 @@ function initDatabase() {
         amenities: JSON.stringify(['WiFi', '空调', '投影仪', '游戏机', '黑胶唱片机', '厨房', '洗衣机']),
         base_price: 328, cleaning_fee: 60, service_fee_percent: 10,
         avg_rating: 4.6, review_count: 67,
-        images: JSON.stringify([]),
+        images: JSON.stringify(['/api/images/10.jpeg', '/api/images/11.jpeg', '/api/images/12.jpeg']),
         host_name: '小陈', host_avatar: '',
         nearby: JSON.stringify([
           { name: '太古里', type: '购物', distance: '200m' },
@@ -199,7 +217,7 @@ function initDatabase() {
         amenities: JSON.stringify(['WiFi', '空调', '私人泳池', '花园', '厨房', '烧烤架', '管家服务', '免费停车', '洗衣机', '烘干机']),
         base_price: 1588, cleaning_fee: 200, service_fee_percent: 10,
         avg_rating: 5.0, review_count: 42,
-        images: JSON.stringify([]),
+        images: JSON.stringify(['/api/images/13.jpeg', '/api/images/14.jpeg', '/api/images/15.jpeg']),
         host_name: '王管家', host_avatar: '',
         nearby: JSON.stringify([
           { name: '海棠湾沙滩', type: '景点', distance: '300m' },
@@ -218,7 +236,7 @@ function initDatabase() {
         amenities: JSON.stringify(['WiFi', '空调', '暖气', '院子', '自行车租赁', '茶具']),
         base_price: 428, cleaning_fee: 50, service_fee_percent: 10,
         avg_rating: 4.8, review_count: 178,
-        images: JSON.stringify([]),
+        images: JSON.stringify(['/api/images/16.jpeg', '/api/images/17.jpeg', '/api/images/18.jpeg']),
         host_name: '老刘', host_avatar: '',
         nearby: JSON.stringify([
           { name: '南锣鼓巷', type: '景点', distance: '50m' },
@@ -238,7 +256,7 @@ function initDatabase() {
         amenities: JSON.stringify(['WiFi', '空调', '办公桌', '打印机', '咖啡机', '厨房', '洗衣机', '健身房']),
         base_price: 398, cleaning_fee: 60, service_fee_percent: 10,
         avg_rating: 4.5, review_count: 54,
-        images: JSON.stringify([]),
+        images: JSON.stringify(['/api/images/19.jpeg', '/api/images/20.jpeg', '/api/images/21.jpeg']),
         host_name: 'Alex', host_avatar: '',
         nearby: JSON.stringify([
           { name: '广州塔', type: '景点', distance: '1km' },
@@ -258,7 +276,7 @@ function initDatabase() {
         amenities: JSON.stringify(['WiFi', '洱海景观', '自行车租赁', '扎染体验', '早餐', '茶室', '猫']),
         base_price: 258, cleaning_fee: 30, service_fee_percent: 8,
         avg_rating: 4.7, review_count: 312,
-        images: JSON.stringify([]),
+        images: JSON.stringify(['/api/images/22.jpeg', '/api/images/23.jpeg', '/api/images/24.jpeg']),
         host_name: '大理老杨', host_avatar: '',
         nearby: JSON.stringify([
           { name: '洱海', type: '景点', distance: '50m' },
@@ -278,7 +296,7 @@ function initDatabase() {
         amenities: JSON.stringify(['WiFi', '空调', '秦淮河景观', '茶具', '汉服体验', '厨房']),
         base_price: 338, cleaning_fee: 50, service_fee_percent: 10,
         avg_rating: 4.6, review_count: 95,
-        images: JSON.stringify([]),
+        images: JSON.stringify(['/api/images/25.jpeg', '/api/images/26.jpeg', '/api/images/27.jpeg']),
         host_name: '金陵小周', host_avatar: '',
         nearby: JSON.stringify([
           { name: '夫子庙', type: '景点', distance: '100m' },
@@ -298,7 +316,7 @@ function initDatabase() {
         amenities: JSON.stringify(['WiFi', '空调', '江景阳台', '厨房', '洗衣机', '投影仪', '火锅设备']),
         base_price: 388, cleaning_fee: 70, service_fee_percent: 10,
         avg_rating: 4.7, review_count: 143,
-        images: JSON.stringify([]),
+        images: JSON.stringify(['/api/images/28.jpeg', '/api/images/29.jpeg', '/api/images/30.jpeg']),
         host_name: '山城小伙', host_avatar: '',
         nearby: JSON.stringify([
           { name: '解放碑', type: '景点', distance: '200m' },
@@ -318,7 +336,7 @@ function initDatabase() {
         amenities: JSON.stringify(['WiFi', '空调', '暖气', '汉服租赁', '古城导览', '茶室', '书法体验']),
         base_price: 268, cleaning_fee: 40, service_fee_percent: 8,
         avg_rating: 4.5, review_count: 167,
-        images: JSON.stringify([]),
+        images: JSON.stringify(['/api/images/31.jpeg', '/api/images/32.jpeg', '/api/images/33.jpeg']),
         host_name: '长安老赵', host_avatar: '',
         nearby: JSON.stringify([
           { name: '钟楼', type: '景点', distance: '300m' },
@@ -338,7 +356,7 @@ function initDatabase() {
         amenities: JSON.stringify(['WiFi', '空调', '智能家居', '升降桌', '健身房', '咖啡厅', '共享办公', '洗衣房']),
         base_price: 168, cleaning_fee: 20, service_fee_percent: 5,
         avg_rating: 4.3, review_count: 78,
-        images: JSON.stringify([]),
+        images: JSON.stringify(['/api/images/34.jpeg', '/api/images/35.jpeg', '/api/images/36.jpeg']),
         host_name: '科技园小刘', host_avatar: '',
         nearby: JSON.stringify([
           { name: '深圳湾公园', type: '景点', distance: '1km' },

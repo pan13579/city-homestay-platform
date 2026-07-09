@@ -14,13 +14,25 @@ export struct OrderCard {
       Column() {
         Row() {
           // Listing cover
-          Image(this.order.listing_cover
-            ? ApiEndpoints.getImageUrl(this.order.listing_cover)
-            : '')
+          if (this.order.listing_cover) {
+            Image(ApiEndpoints.getImageUrl(this.order.listing_cover))
+              .width(80)
+              .height(70)
+              .objectFit(ImageFit.Cover)
+              .borderRadius(8);
+          } else {
+            Column() {
+              Text('🏠')
+                .fontSize(24)
+                .fontColor('#CCCCCC');
+            }
             .width(80)
             .height(70)
-            .objectFit(ImageFit.Cover)
+            .justifyContent(FlexAlign.Center)
+            .alignItems(HorizontalAlign.Center)
+            .backgroundColor('#F5F5F5')
             .borderRadius(8);
+          }
 
           Column() {
             Row() {

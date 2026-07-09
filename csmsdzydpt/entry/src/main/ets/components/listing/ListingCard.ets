@@ -9,18 +9,44 @@ export struct ListingCard {
   @Prop listing: ListingBrief | null = null;
   onTap: () => void = () => {};
 
+  getPlaceholderColor(): string {
+    if (!this.listing) return '#CCCCCC';
+    const colors = ['#FF6B35', '#2EC4B6', '#4A90D9', '#E57373', '#81C784',
+      '#FFB74D', '#4DB6AC', '#7986CB', '#FF8A65', '#4FC3F7'];
+    const hash = this.listing.title.split('').reduce((sum, c) => sum + c.charCodeAt(0), 0);
+    return colors[hash % colors.length];
+  }
+
   build() {
     if (this.listing) {
       Column() {
         // Image
         Stack() {
-          Image(this.listing.images && this.listing.images.length > 0
-            ? ApiEndpoints.getImageUrl(this.listing.images[0])
-            : '')
+          if (this.listing.images && this.listing.images.length > 0) {
+            Image(ApiEndpoints.getImageUrl(this.listing.images[0]))
+              .width('100%')
+              .height(140)
+              .objectFit(ImageFit.Cover)
+              .borderRadius({ topLeft: 12, topRight: 12 });
+          } else {
+            // Placeholder when no image is available
+            Column() {
+              Text('🏠')
+                .fontSize(40)
+                .margin({ bottom: 4 });
+              Text(this.listing.title)
+                .fontSize(11)
+                .fontColor('#FFFFFF')
+                .opacity(0.7)
+                .maxLines(1);
+            }
             .width('100%')
             .height(140)
-            .objectFit(ImageFit.Cover)
+            .justifyContent(FlexAlign.Center)
+            .alignItems(HorizontalAlign.Center)
+            .backgroundColor(this.getPlaceholderColor())
             .borderRadius({ topLeft: 12, topRight: 12 });
+          }
 
           // Room type badge
           Text(getRoomTypeLabel(this.listing.room_type))
